@@ -1658,9 +1658,11 @@ async function renderLeaderboard(){
 
     const miles = s.reduce((a,x)=>a+(x.distance||0),0) + pel.reduce((a,x)=>a+(x.distance||0),0);
     const totalPu = p.reduce((a,x)=>a+(x.total||0),0);
+    const totalKj = pel.reduce((a,x)=>a+(x.output_kj||0),0);
+    const otherCount = oth.length;
     const pts = calcTotalPoints(s, p, pel, oth);
 
-    results.push({name:u.name, miles, totalPu, streak:pts.streak, points:pts.total, photo, sessions:s, pushups:p, peloton:pel, other:oth});
+    results.push({name:u.name, miles, totalPu, totalKj, otherCount, streak:pts.streak, points:pts.total, photo, sessions:s, pushups:p, peloton:pel, other:oth});
   }
 
   const keyMap = {points:'points', miles:'miles', pushups:'totalPu', streak:'streak'};
@@ -1696,7 +1698,7 @@ async function renderLeaderboard(){
         '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
         '<div class="lb-main">' +
           '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
-          '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+          '<div class="lb-sub">' + buildLbSubLine(r) + '</div>' +
         '</div>' +
         '<div class="lb-stat">' +
           '<div class="v">' + valDisplay + '</div>' +
@@ -1707,6 +1709,14 @@ async function renderLeaderboard(){
       panelHtml +
     '</div>';
   }).join('');
+}
+
+function buildLbSubLine(r){
+  const parts = [r.points + ' pts', r.miles.toFixed(1) + ' mi', r.totalPu + ' reps'];
+  if(r.totalKj > 0) parts.push(r.totalKj + ' kJ');
+  if(r.otherCount > 0) parts.push(r.otherCount + ' other');
+  parts.push(r.streak + 'd streak');
+  return parts.join(' - ');
 }
 
 function renderAdminPanel(r){
@@ -1783,7 +1793,7 @@ function renderLeaderboardFromCache(){
         '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
         '<div class="lb-main">' +
           '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
-          '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+          '<div class="lb-sub">' + buildLbSubLine(r) + '</div>' +
         '</div>' +
         '<div class="lb-stat">' +
           '<div class="v">' + valDisplay + '</div>' +
