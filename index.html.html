@@ -552,18 +552,21 @@
     border:1px solid var(--line);
     border-radius:12px;
     padding:4px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
   }
   .lb-toggle button{
-    flex:1;
+    flex:0 0 auto;
     border:none;
     background:transparent;
     color:var(--ink-mute);
-    padding:8px 0;
+    padding:8px 14px;
     border-radius:9px;
     font-size:11px;
     font-weight:800;
     text-transform:uppercase;
     cursor:pointer;
+    white-space:nowrap;
   }
   .lb-toggle button.active{
     background:var(--cyan);
@@ -952,6 +955,8 @@
       <button id="lbTogglePoints" class="active" onclick="setLbMode('points')">Points</button>
       <button id="lbToggleMiles" onclick="setLbMode('miles')">Miles</button>
       <button id="lbTogglePushups" onclick="setLbMode('pushups')">Push-ups</button>
+      <button id="lbTogglePeloton" onclick="setLbMode('peloton')">Peloton</button>
+      <button id="lbToggleOther" onclick="setLbMode('other')">Other</button>
       <button id="lbToggleStreak" onclick="setLbMode('streak')">Streak</button>
     </div>
     <div class="section" style="margin-top:0;"><h2 id="lbTitle">Total Points</h2></div>
@@ -1621,8 +1626,10 @@ function setLbMode(mode){
   document.getElementById('lbTogglePoints').classList.toggle('active', mode==='points');
   document.getElementById('lbToggleMiles').classList.toggle('active', mode==='miles');
   document.getElementById('lbTogglePushups').classList.toggle('active', mode==='pushups');
+  document.getElementById('lbTogglePeloton').classList.toggle('active', mode==='peloton');
+  document.getElementById('lbToggleOther').classList.toggle('active', mode==='other');
   document.getElementById('lbToggleStreak').classList.toggle('active', mode==='streak');
-  const titles = {points:'Total Points', miles:'Total Miles', pushups:'Total Push-ups', streak:'Current Streak'};
+  const titles = {points:'Total Points', miles:'Total Miles', pushups:'Total Push-ups', peloton:'Peloton Output (kJ)', other:'Other Activities', streak:'Current Streak'};
   document.getElementById('lbTitle').textContent = titles[mode];
   renderLeaderboard();
 }
@@ -1665,7 +1672,7 @@ async function renderLeaderboard(){
     results.push({name:u.name, miles, totalPu, totalKj, otherCount, streak:pts.streak, points:pts.total, photo, sessions:s, pushups:p, peloton:pel, other:oth});
   }
 
-  const keyMap = {points:'points', miles:'miles', pushups:'totalPu', streak:'streak'};
+  const keyMap = {points:'points', miles:'miles', pushups:'totalPu', peloton:'totalKj', other:'otherCount', streak:'streak'};
   const key = keyMap[lbMode];
   results.sort((a,b) => b[key] - a[key]);
   lbResults = results;
@@ -1679,11 +1686,7 @@ async function renderLeaderboard(){
   list.innerHTML = results.map((r, i) => {
     const rankCls = rankClasses[i] || '';
     const isMe = r.name === currentUser;
-    let valDisplay, label;
-    if(lbMode === 'points'){ valDisplay = r.points; label = 'pts'; }
-    else if(lbMode === 'miles'){ valDisplay = r.miles.toFixed(1); label = 'miles'; }
-    else if(lbMode === 'pushups'){ valDisplay = r.totalPu; label = 'reps'; }
-    else { valDisplay = r.streak; label = r.streak===1?'day':'days'; }
+    const {valDisplay, label} = getLbValueAndLabel(r, lbMode);
     const avatarInner = r.photo
       ? '<img src="' + r.photo + '" alt="">'
       : r.name.charAt(0).toUpperCase();
@@ -1709,6 +1712,15 @@ async function renderLeaderboard(){
       panelHtml +
     '</div>';
   }).join('');
+}
+
+function getLbValueAndLabel(r, mode){
+  if(mode === 'points') return {valDisplay: r.points, label: 'pts'};
+  if(mode === 'miles') return {valDisplay: r.miles.toFixed(1), label: 'miles'};
+  if(mode === 'pushups') return {valDisplay: r.totalPu, label: 'reps'};
+  if(mode === 'peloton') return {valDisplay: r.totalKj, label: 'kJ'};
+  if(mode === 'other') return {valDisplay: r.otherCount, label: r.otherCount===1?'activity':'activities'};
+  return {valDisplay: r.streak, label: r.streak===1?'day':'days'};
 }
 
 function buildLbSubLine(r){
@@ -1774,11 +1786,7 @@ function renderLeaderboardFromCache(){
   list.innerHTML = lbResults.map((r, i) => {
     const rankCls = rankClasses[i] || '';
     const isMe = r.name === currentUser;
-    let valDisplay, label;
-    if(lbMode === 'points'){ valDisplay = r.points; label = 'pts'; }
-    else if(lbMode === 'miles'){ valDisplay = r.miles.toFixed(1); label = 'miles'; }
-    else if(lbMode === 'pushups'){ valDisplay = r.totalPu; label = 'reps'; }
-    else { valDisplay = r.streak; label = r.streak===1?'day':'days'; }
+    const {valDisplay, label} = getLbValueAndLabel(r, lbMode);
     const avatarInner = r.photo
       ? '<img src="' + r.photo + '" alt="">'
       : r.name.charAt(0).toUpperCase();
