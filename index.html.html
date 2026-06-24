@@ -19,6 +19,7 @@
     --cyan:#3FD1C7;
     --gold:#F2B705;
     --danger:#E5484D;
+    --purple:#9B6BFF;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html,body{margin:0;padding:0;background:var(--bg);}
@@ -569,6 +570,61 @@
     color:#06201d;
   }
 
+  .lb-row-wrap{ margin: 0 0 10px 0; }
+  .lb-row-wrap .lb-row{ margin-bottom: 0; }
+  .lb-row-wrap .lb-row + .admin-panel{ margin-top: -4px; }
+  .lb-admin-btn{
+    width:28px; height:28px;
+    border-radius:50%;
+    background:var(--bg-soft);
+    color:var(--ink-mute);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
+    cursor:pointer;
+    margin-left:8px;
+  }
+  .lb-admin-btn:active{ transform: scale(0.92); }
+  .admin-panel{
+    background: var(--bg-soft);
+    border: 1px solid var(--danger);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    margin: 0 20px;
+    padding: 10px 14px;
+  }
+  .admin-panel-title{
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--danger);
+    margin-bottom: 8px;
+  }
+  .admin-empty{
+    font-size: 12px;
+    color: var(--ink-mute);
+    padding: 6px 0;
+  }
+  .admin-entry{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 10px;
+  }
+  .admin-entry:last-child{ border-bottom: none; }
+  .admin-entry-text{
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    flex: 1;
+  }
+  .log-delete.admin{
+    width: 22px; height: 22px;
+    font-size: 13px;
+  }
+
   .fab-row{
     position:fixed;
     left:50%;
@@ -594,8 +650,43 @@
     cursor:pointer;
   }
   .fab:active{ transform: scale(0.97); }
-  .fab.run{ background:var(--flame); color:#1a0a00; }
-  .fab.pushup{ background:var(--cyan); color:#06201d; }
+  .fab.log-activity{
+    background: linear-gradient(120deg, var(--flame), var(--cyan));
+    color:#0a0a0a;
+  }
+
+  .category-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .category-btn{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    color:var(--ink);
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .category-btn:active{ transform: scale(0.96); }
+  .category-icon{
+    width:40px; height:40px;
+    border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px;
+    font-weight:900;
+  }
+  .category-btn.run .category-icon{ background:rgba(255,90,31,0.15); color:var(--flame); }
+  .category-btn.strength .category-icon{ background:rgba(63,209,199,0.15); color:var(--cyan); }
+  .category-btn.peloton .category-icon{ background:rgba(242,183,5,0.15); color:var(--gold); }
+  .category-btn.other .category-icon{ background:rgba(155,107,255,0.15); color:var(--purple); }
 
   .overlay{
     position:fixed; inset:0;
@@ -620,6 +711,32 @@
     font-weight:800;
   }
   .field-row{display:flex; gap:10px;}
+  .duration-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .duration-row input{
+    width:100%;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+    text-align:center;
+  }
+  .duration-row input:focus{
+    outline:none;
+    border-color:var(--flame);
+  }
+  .duration-sep{
+    font-size:12px;
+    color:var(--ink-mute);
+    font-weight:600;
+    flex-shrink:0;
+  }
   .field-row .field{flex:1;}
   .modal-actions{
     display:flex;
@@ -842,8 +959,34 @@
   </div>
 
   <div class="fab-row">
-    <button class="fab run" onclick="openRunModal()">+ Run</button>
-    <button class="fab pushup" onclick="openPushupModal()">+ Push-ups</button>
+    <button class="fab log-activity" onclick="openCategoryPicker()">+ Log Activity</button>
+  </div>
+</div>
+
+<div class="overlay" id="categoryOverlay">
+  <div class="modal">
+    <h3>Log an Activity</h3>
+    <div class="category-grid">
+      <button class="category-btn run" onclick="closeModals(); openRunModal();">
+        <div class="category-icon">R</div>
+        <div>Run / Walk</div>
+      </button>
+      <button class="category-btn strength" onclick="closeModals(); openPushupModal();">
+        <div class="category-icon">S</div>
+        <div>Strength</div>
+      </button>
+      <button class="category-btn peloton" onclick="closeModals(); openPelotonModal();">
+        <div class="category-icon">P</div>
+        <div>Peloton</div>
+      </button>
+      <button class="category-btn other" onclick="closeModals(); openOtherModal();">
+        <div class="category-icon">O</div>
+        <div>Other</div>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -868,8 +1011,13 @@
         <input type="number" step="0.01" id="runDistance" placeholder="2.01">
       </div>
       <div class="field">
-        <label>Duration (mm:ss or min)</label>
-        <input type="text" id="runDuration" placeholder="21:49 or 22" inputmode="decimal">
+        <label>Duration</label>
+        <div class="duration-row">
+          <input type="number" id="runDurationMin" placeholder="21" inputmode="numeric" min="0">
+          <span class="duration-sep">min</span>
+          <input type="number" id="runDurationSec" placeholder="49" inputmode="numeric" min="0" max="59">
+          <span class="duration-sep">sec</span>
+        </div>
       </div>
     </div>
     <div class="field-row">
@@ -891,7 +1039,17 @@
 
 <div class="overlay" id="pushupOverlay">
   <div class="modal">
-    <h3>Log Push-ups</h3>
+    <h3>Log Strength</h3>
+    <div class="field">
+      <label>Exercise</label>
+      <select id="puExercise">
+        <option>Push-ups</option>
+        <option>Squats</option>
+        <option>Dips</option>
+        <option>Pull-ups</option>
+        <option>Sit-ups</option>
+      </select>
+    </div>
     <div class="field">
       <label>Date</label>
       <input type="date" id="pushupDate">
@@ -911,7 +1069,87 @@
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModals()">Cancel</button>
-      <button class="btn-save" onclick="savePushups()">Save Push-ups</button>
+      <button class="btn-save" onclick="savePushups()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="pelotonOverlay">
+  <div class="modal">
+    <h3>Log Peloton Ride</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="pelotonDate">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Total Output (kJ)</label>
+        <input type="number" id="pelotonOutput" placeholder="350">
+      </div>
+      <div class="field">
+        <label>Duration (min)</label>
+        <input type="number" id="pelotonDuration" placeholder="30">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Distance (mi)</label>
+        <input type="number" step="0.01" id="pelotonDistance" placeholder="8.5">
+      </div>
+      <div class="field">
+        <label>Calories</label>
+        <input type="number" id="pelotonCalories" placeholder="400">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Avg Output (W)</label>
+        <input type="number" id="pelotonAvgOutput" placeholder="195">
+      </div>
+      <div class="field">
+        <label>Avg Cadence (rpm)</label>
+        <input type="number" id="pelotonAvgCadence" placeholder="85">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Avg Resistance (%)</label>
+        <input type="number" id="pelotonAvgResistance" placeholder="42">
+      </div>
+      <div class="field">
+        <label>Avg Speed (mph)</label>
+        <input type="number" step="0.1" id="pelotonAvgSpeed" placeholder="17.2">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+      <button class="btn-save" onclick="savePeloton()">Save Ride</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="otherOverlay">
+  <div class="modal">
+    <h3>Log Other Activity</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="otherDate">
+    </div>
+    <div class="field">
+      <label>Activity Name</label>
+      <input type="text" id="otherName" placeholder="Golf, basketball, hiking...">
+    </div>
+    <div class="field">
+      <label>Duration (min)</label>
+      <input type="number" id="otherDuration" placeholder="120">
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <input type="text" id="otherNotes" placeholder="18 holes, walked the course">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+      <button class="btn-save" onclick="saveOther()">Save Activity</button>
     </div>
   </div>
 </div>
@@ -939,11 +1177,16 @@
 <script>
 let users = [];
 let currentUser = null;
+let isCurrentUserAdmin = false;
 let sessions = [];
 let pushups = [];
+let peloton = [];
+let other = [];
 let myPhoto = null;
 let activeTab = 'me';
 let lbMode = 'points';
+let lbResults = [];
+let adminPanelUser = null;
 
 /* ============ Supabase REST client ============
    Talks directly to Supabase's auto-generated REST API (PostgREST)
@@ -971,8 +1214,8 @@ async function sbFetch(path, options){
 
 const db = {
   async getUsers(){
-    const rows = await sbFetch('users?select=name,pin_hash');
-    return (rows || []).map(r => ({name: r.name, pinHash: r.pin_hash}));
+    const rows = await sbFetch('users?select=name,pin_hash,is_admin');
+    return (rows || []).map(r => ({name: r.name, pinHash: r.pin_hash, isAdmin: !!r.is_admin}));
   },
   async createUser(name, pinHash){
     return sbFetch('users', {
@@ -995,7 +1238,7 @@ const db = {
     return sbFetch('sessions?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
   },
   async getPushups(name){
-    const rows = await sbFetch('pushups?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,type,sets,total,points&order=date.asc');
+    const rows = await sbFetch('pushups?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,type,exercise,sets,total,points&order=date.asc');
     return rows || [];
   },
   async deletePushup(id){
@@ -1017,6 +1260,32 @@ const db = {
       headers: {'Prefer': 'resolution=merge-duplicates'},
       body: JSON.stringify({user_name: name, photo_data: dataUrl, updated_at: new Date().toISOString()}),
     });
+  },
+  async getPeloton(name){
+    const rows = await sbFetch('peloton?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,output_kj,distance,calories,avg_output,avg_cadence,avg_resistance,avg_speed,duration,points&order=date.asc');
+    return rows || [];
+  },
+  async addPeloton(name, entry){
+    return sbFetch('peloton', {
+      method: 'POST',
+      body: JSON.stringify(Object.assign({user_name: name}, entry)),
+    });
+  },
+  async deletePeloton(id){
+    return sbFetch('peloton?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
+  },
+  async getOther(name){
+    const rows = await sbFetch('other_activities?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,activity_name,duration,notes,points&order=date.asc');
+    return rows || [];
+  },
+  async addOther(name, entry){
+    return sbFetch('other_activities', {
+      method: 'POST',
+      body: JSON.stringify(Object.assign({user_name: name}, entry)),
+    });
+  },
+  async deleteOther(id){
+    return sbFetch('other_activities?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
   },
 };
 
@@ -1136,6 +1405,7 @@ async function boot(){
 
   if(savedUser && users.find(u => u.name === savedUser)){
     currentUser = savedUser;
+    isCurrentUserAdmin = !!users.find(u => u.name === savedUser).isAdmin;
     await enterApp();
   }
 }
@@ -1182,6 +1452,7 @@ async function doLogin(){
     return;
   }
   currentUser = selectedLoginName;
+  isCurrentUserAdmin = !!user.isAdmin;
   err.textContent = '';
   await enterApp();
 }
@@ -1210,6 +1481,7 @@ async function doSignup(){
     users = await db.getUsers();
   }catch(e){}
   currentUser = name;
+  isCurrentUserAdmin = false;
   err.textContent = '';
   await enterApp();
 }
@@ -1305,8 +1577,11 @@ function handlePhotoUpload(event){
 async function confirmLogout(){
   try{ localStorage.removeItem('cuyler:activeUser'); }catch(e){}
   currentUser = null;
+  isCurrentUserAdmin = false;
   sessions = [];
   pushups = [];
+  peloton = [];
+  other = [];
   myPhoto = null;
   closeModals();
   document.getElementById('mainApp').classList.remove('show');
@@ -1324,6 +1599,12 @@ async function loadUserData(){
   try{
     pushups = await db.getPushups(currentUser);
   }catch(e){ pushups = []; }
+  try{
+    peloton = await db.getPeloton(currentUser);
+  }catch(e){ peloton = []; }
+  try{
+    other = await db.getOther(currentUser);
+  }catch(e){ other = []; }
 }
 
 function switchTab(tab){
@@ -1356,12 +1637,18 @@ async function renderLeaderboard(){
 
   const results = [];
   for(const u of users){
-    let s = [], p = [];
+    let s = [], p = [], pel = [], oth = [];
     try{
       s = await db.getSessions(u.name);
     }catch(e){}
     try{
       p = await db.getPushups(u.name);
+    }catch(e){}
+    try{
+      pel = await db.getPeloton(u.name);
+    }catch(e){}
+    try{
+      oth = await db.getOther(u.name);
     }catch(e){}
 
     let photo = null;
@@ -1369,16 +1656,17 @@ async function renderLeaderboard(){
       photo = await db.getPhoto(u.name);
     }catch(e){}
 
-    const miles = s.reduce((a,x)=>a+(x.distance||0),0);
+    const miles = s.reduce((a,x)=>a+(x.distance||0),0) + pel.reduce((a,x)=>a+(x.distance||0),0);
     const totalPu = p.reduce((a,x)=>a+(x.total||0),0);
-    const pts = calcTotalPoints(s, p);
+    const pts = calcTotalPoints(s, p, pel, oth);
 
-    results.push({name:u.name, miles, totalPu, streak:pts.streak, points:pts.total, photo});
+    results.push({name:u.name, miles, totalPu, streak:pts.streak, points:pts.total, photo, sessions:s, pushups:p, peloton:pel, other:oth});
   }
 
   const keyMap = {points:'points', miles:'miles', pushups:'totalPu', streak:'streak'};
   const key = keyMap[lbMode];
   results.sort((a,b) => b[key] - a[key]);
+  lbResults = results;
 
   if(results.length === 0){
     list.innerHTML = '<div class="empty-state">No one has logged anything yet.</div>';
@@ -1398,21 +1686,162 @@ async function renderLeaderboard(){
       ? '<img src="' + r.photo + '" alt="">'
       : r.name.charAt(0).toUpperCase();
     const avatarCls = r.photo ? 'lb-avatar has-photo' : 'lb-avatar';
-    return '<div class="lb-row">' +
-      '<div class="lb-rank ' + rankCls + '">' + (i+1) + '</div>' +
-      '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
-      '<div class="lb-main">' +
-        '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
-        '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+    const adminBtn = isCurrentUserAdmin
+      ? '<div class="lb-admin-btn" onclick="toggleAdminPanel(\'' + r.name + '\')">&#8226;&#8226;&#8226;</div>'
+      : '';
+    const panelHtml = (isCurrentUserAdmin && adminPanelUser === r.name) ? renderAdminPanel(r) : '';
+    return '<div class="lb-row-wrap">' +
+      '<div class="lb-row">' +
+        '<div class="lb-rank ' + rankCls + '">' + (i+1) + '</div>' +
+        '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
+        '<div class="lb-main">' +
+          '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
+          '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+        '</div>' +
+        '<div class="lb-stat">' +
+          '<div class="v">' + valDisplay + '</div>' +
+          '<div class="l">' + label + '</div>' +
+        '</div>' +
+        adminBtn +
       '</div>' +
-      '<div class="lb-stat">' +
-        '<div class="v">' + valDisplay + '</div>' +
-        '<div class="l">' + label + '</div>' +
-      '</div>' +
+      panelHtml +
     '</div>';
   }).join('');
 }
 
+function renderAdminPanel(r){
+  const combined = [
+    ...r.sessions.map(s => Object.assign({}, s, {kind:'session'})),
+    ...r.pushups.map(p => Object.assign({}, p, {kind:'pushup'})),
+    ...(r.peloton||[]).map(p => Object.assign({}, p, {kind:'peloton'})),
+    ...(r.other||[]).map(o => Object.assign({}, o, {kind:'other'})),
+  ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  if(combined.length === 0){
+    return '<div class="admin-panel"><div class="admin-panel-title">Admin: ' + r.name + '\u2019s entries</div><div class="admin-empty">No entries to manage.</div></div>';
+  }
+
+  const items = combined.slice(0,15).map(item => {
+    if(item.kind === 'session'){
+      const pts = item.points || Math.round((item.duration||0) * 2);
+      return '<div class="admin-entry">' +
+        '<div class="admin-entry-text">' + fmtDate(item.date) + ' - ' + item.type + ' - ' + fmtDuration(item.duration||0) + ' - +' + pts + 'pts</div>' +
+        '<div class="log-delete admin" onclick="handleAdminDeleteClick(event, \'' + item.id + '\', \'session\', \'' + r.name + '\')">&times;</div>' +
+      '</div>';
+    } else if(item.kind === 'pushup'){
+      const pts = item.points || Math.round((item.total||0) * (EXERCISE_MULTIPLIERS[item.exercise] || 1.5));
+      return '<div class="admin-entry">' +
+        '<div class="admin-entry-text">' + fmtDate(item.date) + ' - ' + (item.exercise||'Push-ups') + ' - ' + item.total + ' reps - +' + pts + 'pts</div>' +
+        '<div class="log-delete admin" onclick="handleAdminDeleteClick(event, \'' + item.id + '\', \'pushup\', \'' + r.name + '\')">&times;</div>' +
+      '</div>';
+    } else if(item.kind === 'peloton'){
+      const pts = item.points || Math.round((item.output_kj||0) * 1.0);
+      return '<div class="admin-entry">' +
+        '<div class="admin-entry-text">' + fmtDate(item.date) + ' - Peloton - ' + (item.output_kj||0) + 'kJ - +' + pts + 'pts</div>' +
+        '<div class="log-delete admin" onclick="handleAdminDeleteClick(event, \'' + item.id + '\', \'peloton\', \'' + r.name + '\')">&times;</div>' +
+      '</div>';
+    } else {
+      const pts = item.points || Math.round((item.duration||0) * 2);
+      return '<div class="admin-entry">' +
+        '<div class="admin-entry-text">' + fmtDate(item.date) + ' - ' + item.activity_name + ' - ' + fmtDuration(item.duration||0) + ' - +' + pts + 'pts</div>' +
+        '<div class="log-delete admin" onclick="handleAdminDeleteClick(event, \'' + item.id + '\', \'other\', \'' + r.name + '\')">&times;</div>' +
+      '</div>';
+    }
+  }).join('');
+
+  return '<div class="admin-panel"><div class="admin-panel-title">Admin: ' + r.name + '\u2019s entries</div>' + items + '</div>';
+}
+
+function toggleAdminPanel(name){
+  adminPanelUser = (adminPanelUser === name) ? null : name;
+  renderLeaderboardFromCache();
+}
+
+function renderLeaderboardFromCache(){
+  // Re-render using already-fetched lbResults, no need to re-hit the database
+  const list = document.getElementById('lbList');
+  const rankClasses = ['gold','silver','bronze'];
+  list.innerHTML = lbResults.map((r, i) => {
+    const rankCls = rankClasses[i] || '';
+    const isMe = r.name === currentUser;
+    let valDisplay, label;
+    if(lbMode === 'points'){ valDisplay = r.points; label = 'pts'; }
+    else if(lbMode === 'miles'){ valDisplay = r.miles.toFixed(1); label = 'miles'; }
+    else if(lbMode === 'pushups'){ valDisplay = r.totalPu; label = 'reps'; }
+    else { valDisplay = r.streak; label = r.streak===1?'day':'days'; }
+    const avatarInner = r.photo
+      ? '<img src="' + r.photo + '" alt="">'
+      : r.name.charAt(0).toUpperCase();
+    const avatarCls = r.photo ? 'lb-avatar has-photo' : 'lb-avatar';
+    const adminBtn = isCurrentUserAdmin
+      ? '<div class="lb-admin-btn" onclick="toggleAdminPanel(\'' + r.name + '\')">&#8226;&#8226;&#8226;</div>'
+      : '';
+    const panelHtml = (isCurrentUserAdmin && adminPanelUser === r.name) ? renderAdminPanel(r) : '';
+    return '<div class="lb-row-wrap">' +
+      '<div class="lb-row">' +
+        '<div class="lb-rank ' + rankCls + '">' + (i+1) + '</div>' +
+        '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
+        '<div class="lb-main">' +
+          '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
+          '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+        '</div>' +
+        '<div class="lb-stat">' +
+          '<div class="v">' + valDisplay + '</div>' +
+          '<div class="l">' + label + '</div>' +
+        '</div>' +
+        adminBtn +
+      '</div>' +
+      panelHtml +
+    '</div>';
+  }).join('');
+}
+
+let pendingAdminDeleteId = null;
+let pendingAdminDeleteTimeout = null;
+
+async function handleAdminDeleteClick(event, id, kind, ownerName){
+  event.stopPropagation();
+  const btn = event.target;
+
+  if(pendingAdminDeleteId !== id){
+    if(pendingAdminDeleteTimeout) clearTimeout(pendingAdminDeleteTimeout);
+    document.querySelectorAll('.log-delete.admin.confirm').forEach(el => {
+      el.classList.remove('confirm');
+      el.textContent = '\u00d7';
+    });
+    pendingAdminDeleteId = id;
+    btn.classList.add('confirm');
+    btn.textContent = '\u2713';
+    pendingAdminDeleteTimeout = setTimeout(() => {
+      btn.classList.remove('confirm');
+      btn.textContent = '\u00d7';
+      pendingAdminDeleteId = null;
+    }, 3000);
+    return;
+  }
+
+  clearTimeout(pendingAdminDeleteTimeout);
+  pendingAdminDeleteId = null;
+  try{
+    if(kind === 'session'){
+      await db.deleteSession(id);
+    } else if(kind === 'pushup'){
+      await db.deletePushup(id);
+    } else if(kind === 'peloton'){
+      await db.deletePeloton(id);
+    } else if(kind === 'other'){
+      await db.deleteOther(id);
+    }
+    showToast('Deleted ' + ownerName + '\u2019s entry');
+    await renderLeaderboard();
+  }catch(e){
+    showToast('Could not delete');
+  }
+}
+
+function openCategoryPicker(){
+  document.getElementById('categoryOverlay').classList.add('show');
+}
 function openRunModal(){
   document.getElementById('runDate').value = todayISO();
   document.getElementById('runOverlay').classList.add('show');
@@ -1421,21 +1850,46 @@ function openPushupModal(){
   document.getElementById('pushupDate').value = todayISO();
   document.getElementById('pushupOverlay').classList.add('show');
 }
+function openPelotonModal(){
+  document.getElementById('pelotonDate').value = todayISO();
+  document.getElementById('pelotonOverlay').classList.add('show');
+}
+function openOtherModal(){
+  document.getElementById('otherDate').value = todayISO();
+  document.getElementById('otherOverlay').classList.add('show');
+}
 function closeModals(){
+  document.getElementById('categoryOverlay').classList.remove('show');
   document.getElementById('runOverlay').classList.remove('show');
   document.getElementById('pushupOverlay').classList.remove('show');
+  document.getElementById('pelotonOverlay').classList.remove('show');
+  document.getElementById('otherOverlay').classList.remove('show');
   document.getElementById('logoutOverlay').classList.remove('show');
   document.getElementById('runDistance').value='';
-  document.getElementById('runDuration').value='';
+  document.getElementById('runDurationMin').value='';
+  document.getElementById('runDurationSec').value='';
   document.getElementById('runHR').value='';
   document.getElementById('runCal').value='';
   document.getElementById('puSets').value='';
+  document.getElementById('pelotonOutput').value='';
+  document.getElementById('pelotonDuration').value='';
+  document.getElementById('pelotonDistance').value='';
+  document.getElementById('pelotonCalories').value='';
+  document.getElementById('pelotonAvgOutput').value='';
+  document.getElementById('pelotonAvgCadence').value='';
+  document.getElementById('pelotonAvgResistance').value='';
+  document.getElementById('pelotonAvgSpeed').value='';
+  document.getElementById('otherName').value='';
+  document.getElementById('otherDuration').value='';
+  document.getElementById('otherNotes').value='';
 }
 
 async function saveRun(){
   const date = document.getElementById('runDate').value || todayISO();
   const distance = parseFloat(document.getElementById('runDistance').value) || 0;
-  const duration = parseDuration(document.getElementById('runDuration').value);
+  const durMin = parseInt(document.getElementById('runDurationMin').value) || 0;
+  const durSec = parseInt(document.getElementById('runDurationSec').value) || 0;
+  const duration = durMin + (durSec / 60);
   const hr = parseFloat(document.getElementById('runHR').value) || 0;
   const cal = parseFloat(document.getElementById('runCal').value) || 0;
   const type = document.getElementById('runType').value;
@@ -1453,25 +1907,83 @@ async function saveRun(){
   showToast('Run logged' + (points > 0 ? ' - +' + points + ' pts' : ''));
 }
 
+const EXERCISE_MULTIPLIERS = {
+  'Push-ups': 1.5,
+  'Squats': 1.0,
+  'Sit-ups': 1.0,
+  'Dips': 1.5,
+  'Pull-ups': 3.0,
+};
+
 async function savePushups(){
   const date = document.getElementById('pushupDate').value || todayISO();
+  const exercise = document.getElementById('puExercise').value;
   const raw = document.getElementById('puSets').value.trim();
   if(!raw){ showToast('Enter at least one set'); return; }
   const sets = raw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
   if(sets.length === 0){ showToast('Enter valid numbers'); return; }
   const type = document.getElementById('puType').value;
   const total = sets.reduce((a,b)=>a+b, 0);
-  const points = Math.round(total * 1.5);
+  const multiplier = EXERCISE_MULTIPLIERS[exercise] || 1.5;
+  const points = Math.round(total * multiplier);
   try{
-    await db.addPushup(currentUser, {date, type, sets, total, points});
+    await db.addPushup(currentUser, {date, type, exercise, sets, total, points});
     pushups = await db.getPushups(currentUser);
   }catch(e){
-    showToast('Could not save push-ups');
+    showToast('Could not save');
     return;
   }
   closeModals();
   render();
-  showToast('Push-ups logged - +' + points + ' pts');
+  showToast(exercise + ' logged - +' + points + ' pts');
+}
+
+async function savePeloton(){
+  const date = document.getElementById('pelotonDate').value || todayISO();
+  const outputKj = parseFloat(document.getElementById('pelotonOutput').value) || 0;
+  const duration = parseFloat(document.getElementById('pelotonDuration').value) || 0;
+  const distance = parseFloat(document.getElementById('pelotonDistance').value) || 0;
+  const calories = parseFloat(document.getElementById('pelotonCalories').value) || 0;
+  const avgOutput = parseFloat(document.getElementById('pelotonAvgOutput').value) || 0;
+  const avgCadence = parseFloat(document.getElementById('pelotonAvgCadence').value) || 0;
+  const avgResistance = parseFloat(document.getElementById('pelotonAvgResistance').value) || 0;
+  const avgSpeed = parseFloat(document.getElementById('pelotonAvgSpeed').value) || 0;
+  if(outputKj <= 0 && duration <= 0){ showToast('Add output or duration'); return; }
+  const points = Math.round(outputKj * 1.0);
+  try{
+    await db.addPeloton(currentUser, {
+      date, output_kj: outputKj, distance, calories, duration,
+      avg_output: avgOutput, avg_cadence: avgCadence,
+      avg_resistance: avgResistance, avg_speed: avgSpeed, points,
+    });
+    peloton = await db.getPeloton(currentUser);
+  }catch(e){
+    showToast('Could not save ride');
+    return;
+  }
+  closeModals();
+  render();
+  showToast('Peloton ride logged - +' + points + ' pts');
+}
+
+async function saveOther(){
+  const date = document.getElementById('otherDate').value || todayISO();
+  const activityName = document.getElementById('otherName').value.trim();
+  const duration = parseFloat(document.getElementById('otherDuration').value) || 0;
+  const notes = document.getElementById('otherNotes').value.trim();
+  if(!activityName){ showToast('Enter an activity name'); return; }
+  if(duration <= 0){ showToast('Add a duration'); return; }
+  const points = Math.round(duration * 2);
+  try{
+    await db.addOther(currentUser, {date, activity_name: activityName, duration, notes, points});
+    other = await db.getOther(currentUser);
+  }catch(e){
+    showToast('Could not save activity');
+    return;
+  }
+  closeModals();
+  render();
+  showToast(activityName + ' logged - +' + points + ' pts');
 }
 
 /* ---------- Points engine ----------
@@ -1502,13 +2014,22 @@ function calcStreakForDates(allDates){
   return streak;
 }
 
-function calcTotalPoints(sessionsArr, pushupsArr){
+function calcTotalPoints(sessionsArr, pushupsArr, pelotonArr, otherArr){
+  pelotonArr = pelotonArr || [];
+  otherArr = otherArr || [];
   const runPts = sessionsArr.reduce((a,s) => a + (s.points || Math.round((s.duration||0) * 2)), 0);
-  const puPts = pushupsArr.reduce((a,p) => a + (p.points || Math.round((p.total||0) * 1.5)), 0);
-  const allDates = new Set([...sessionsArr.map(x=>x.date), ...pushupsArr.map(x=>x.date)]);
+  const puPts = pushupsArr.reduce((a,p) => a + (p.points || Math.round((p.total||0) * (EXERCISE_MULTIPLIERS[p.exercise] || 1.5))), 0);
+  const pelotonPts = pelotonArr.reduce((a,p) => a + (p.points || Math.round((p.output_kj||0) * 1.0)), 0);
+  const otherPts = otherArr.reduce((a,o) => a + (o.points || Math.round((o.duration||0) * 2)), 0);
+  const allDates = new Set([
+    ...sessionsArr.map(x=>x.date),
+    ...pushupsArr.map(x=>x.date),
+    ...pelotonArr.map(x=>x.date),
+    ...otherArr.map(x=>x.date),
+  ]);
   const streak = calcStreakForDates(allDates);
   const streakPts = calcStreakBonus(streak);
-  return {runPts, puPts, streakPts, total: runPts + puPts + streakPts, streak};
+  return {runPts, puPts, pelotonPts, otherPts, streakPts, total: runPts + puPts + pelotonPts + otherPts + streakPts, streak};
 }
 
 let pendingDeleteId = null;
@@ -1543,9 +2064,15 @@ async function handleDeleteClick(event, id, kind){
     if(kind === 'session'){
       await db.deleteSession(id);
       sessions = await db.getSessions(currentUser);
-    } else {
+    } else if(kind === 'pushup'){
       await db.deletePushup(id);
       pushups = await db.getPushups(currentUser);
+    } else if(kind === 'peloton'){
+      await db.deletePeloton(id);
+      peloton = await db.getPeloton(currentUser);
+    } else if(kind === 'other'){
+      await db.deleteOther(id);
+      other = await db.getOther(currentUser);
     }
     render();
     showToast('Entry deleted');
@@ -1558,24 +2085,29 @@ function render(){
   const weekDates = getWeekDates();
   const weekRunDates = new Set(sessions.filter(s => weekDates.includes(s.date)).map(s=>s.date));
   const weekPushupDates = new Set(pushups.filter(p => weekDates.includes(p.date)).map(p=>p.date));
+  const weekPelotonDates = new Set(peloton.filter(p => weekDates.includes(p.date)).map(p=>p.date));
+  const weekOtherDates = new Set(other.filter(o => weekDates.includes(o.date)).map(o=>o.date));
 
   const dayLetters = ['M','T','W','T','F','S','S'];
   const weekRow = document.getElementById('weekRow');
   weekRow.innerHTML = '';
   weekDates.forEach((d, i) => {
     const hasRun = weekRunDates.has(d);
-    const hasPushup = weekPushupDates.has(d);
+    const hasStrength = weekPushupDates.has(d) || weekPelotonDates.has(d) || weekOtherDates.has(d);
     let cls = '', icon = '';
-    if(hasRun && hasPushup){ cls='both'; icon='!'; }
+    if(hasRun && hasStrength){ cls='both'; icon='!'; }
     else if(hasRun){ cls='run'; icon='R'; }
-    else if(hasPushup){ cls='pushup'; icon='P'; }
+    else if(hasStrength){ cls='pushup'; icon='P'; }
     const el = document.createElement('div');
     el.className = 'day-flame';
     el.innerHTML = '<div class="flame-dot ' + cls + '">' + icon + '</div><div class="day-letter">' + dayLetters[i] + '</div>';
     weekRow.appendChild(el);
   });
 
-  const allDatesActive = new Set([...sessions.map(s=>s.date), ...pushups.map(p=>p.date)]);
+  const allDatesActive = new Set([
+    ...sessions.map(s=>s.date), ...pushups.map(p=>p.date),
+    ...peloton.map(p=>p.date), ...other.map(o=>o.date),
+  ]);
   const streak = calcStreakForDates(allDatesActive);
   document.getElementById('streakCount').textContent = streak + ' day streak';
 
@@ -1586,12 +2118,12 @@ function render(){
   document.getElementById('weekRing').setAttribute('stroke-dashoffset', circumference - (circumference*pct));
   document.getElementById('weekRunCount').textContent = weekRunSessions.length + '/' + runGoal;
 
-  const totalMiles = sessions.reduce((a,s)=>a + (s.distance||0), 0);
+  const totalMiles = sessions.reduce((a,s)=>a + (s.distance||0), 0) + peloton.reduce((a,p)=>a + (p.distance||0), 0);
   document.getElementById('totalMiles').textContent = totalMiles.toFixed(1);
   const totalPushupsCount = pushups.reduce((a,p)=>a + (p.total||0), 0);
   document.getElementById('totalPushups').textContent = totalPushupsCount;
 
-  const pointsBreakdown = calcTotalPoints(sessions, pushups);
+  const pointsBreakdown = calcTotalPoints(sessions, pushups, peloton, other);
   document.getElementById('totalPoints').textContent = pointsBreakdown.total;
 
   const hrVals = sessions.filter(s => s.hr && s.hr > 0).map(s=>s.hr);
@@ -1612,11 +2144,13 @@ function render(){
   const combined = [
     ...sessions.map(s => Object.assign({}, s, {kind:'session'})),
     ...pushups.map(p => Object.assign({}, p, {kind:'pushup'})),
+    ...peloton.map(p => Object.assign({}, p, {kind:'peloton'})),
+    ...other.map(o => Object.assign({}, o, {kind:'other'})),
   ].sort((a,b) => new Date(b.date) - new Date(a.date));
 
   const logList = document.getElementById('logList');
   if(combined.length === 0){
-    logList.innerHTML = '<div class="empty-state">No activity yet. Log a run or a push-up set below to get started.</div>';
+    logList.innerHTML = '<div class="empty-state">No activity yet. Tap + Log Activity below to get started.</div>';
   } else {
     logList.innerHTML = combined.slice(0,10).map(item => {
       if(item.kind === 'session'){
@@ -1636,12 +2170,12 @@ function render(){
           '</div>' +
           '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'session\')">&times;</div>' +
         '</div>';
-      } else {
-        const pts = item.points || Math.round((item.total||0) * 1.5);
+      } else if(item.kind === 'pushup'){
+        const pts = item.points || Math.round((item.total||0) * (EXERCISE_MULTIPLIERS[item.exercise] || 1.5));
         return '<div class="log-item" data-id="' + item.id + '" data-kind="pushup">' +
-          '<div class="log-icon pushup">P</div>' +
+          '<div class="log-icon pushup">S</div>' +
           '<div class="log-main">' +
-            '<div class="log-title">' + item.type + '</div>' +
+            '<div class="log-title">' + (item.exercise || 'Push-ups') + '</div>' +
             '<div class="log-sub">' + fmtDate(item.date) + ' - ' + item.total + ' reps - ' + item.sets.length + ' sets (' + item.sets.join(', ') + ')</div>' +
           '</div>' +
           '<div class="log-right">' +
@@ -1649,6 +2183,34 @@ function render(){
             '<div class="l">pts</div>' +
           '</div>' +
           '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'pushup\')">&times;</div>' +
+        '</div>';
+      } else if(item.kind === 'peloton'){
+        const pts = item.points || Math.round((item.output_kj||0) * 1.0);
+        return '<div class="log-item" data-id="' + item.id + '" data-kind="peloton">' +
+          '<div class="log-icon pushup" style="background:rgba(242,183,5,0.15); color:var(--gold);">P</div>' +
+          '<div class="log-main">' +
+            '<div class="log-title">Peloton Ride</div>' +
+            '<div class="log-sub">' + fmtDate(item.date) + ' - ' + (item.output_kj||0) + 'kJ - ' + fmtDuration(item.duration||0) + ' - ' + (item.distance||0).toFixed(1) + ' mi</div>' +
+          '</div>' +
+          '<div class="log-right">' +
+            '<div class="v" style="color:var(--gold);">+' + pts + '</div>' +
+            '<div class="l">pts</div>' +
+          '</div>' +
+          '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'peloton\')">&times;</div>' +
+        '</div>';
+      } else {
+        const pts = item.points || Math.round((item.duration||0) * 2);
+        return '<div class="log-item" data-id="' + item.id + '" data-kind="other">' +
+          '<div class="log-icon pushup" style="background:rgba(155,107,255,0.15); color:var(--purple);">O</div>' +
+          '<div class="log-main">' +
+            '<div class="log-title">' + item.activity_name + '</div>' +
+            '<div class="log-sub">' + fmtDate(item.date) + ' - ' + fmtDuration(item.duration||0) + (item.notes ? ' - '+item.notes : '') + '</div>' +
+          '</div>' +
+          '<div class="log-right">' +
+            '<div class="v" style="color:var(--purple);">+' + pts + '</div>' +
+            '<div class="l">pts</div>' +
+          '</div>' +
+          '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'other\')">&times;</div>' +
         '</div>';
       }
     }).join('');
