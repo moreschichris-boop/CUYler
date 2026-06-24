@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CuyLer</title>
+<style>
+  :root{
+    --bg:#0E0F11;
+    --bg-soft:#16181B;
+    --card:#1B1E22;
+    --card-hi:#222629;
+    --line:#2A2E33;
+    --ink:#F4F2EE;
+    --ink-dim:#9A9DA2;
+    --ink-mute:#6B6F75;
+    --flame:#FF5A1F;
+    --flame-dim:#7A3318;
+    --cyan:#3FD1C7;
+    --gold:#F2B705;
+    --danger:#E5484D;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    padding:0 0 110px 0;
+    min-height:100vh;
+    display:none;
+  }
+  .wrap.show{display:block;}
+
+  .auth-screen{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:30px 24px;
+  }
+  .auth-screen.hide{display:none;}
+  .auth-brand{
+    font-family:'Arial Black', Arial, sans-serif;
+    font-weight:900;
+    font-size:34px;
+    text-transform:uppercase;
+    letter-spacing:-1px;
+    text-align:center;
+    margin-bottom:4px;
+  }
+  .auth-brand span{color:var(--flame);}
+  .auth-sub{
+    text-align:center;
+    color:var(--ink-mute);
+    font-size:13px;
+    margin-bottom:32px;
+    font-weight:600;
+  }
+  .auth-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 20px;
+  }
+  .auth-toggle{
+    display:flex;
+    gap:6px;
+    background:var(--bg-soft);
+    border-radius:12px;
+    padding:4px;
+    margin-bottom:18px;
+  }
+  .auth-toggle button{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:var(--ink-mute);
+    padding:9px 0;
+    border-radius:9px;
+    font-size:12.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    cursor:pointer;
+  }
+  .auth-toggle button.active{
+    background:var(--flame);
+    color:#1a0a00;
+  }
+  .field{margin-bottom:14px;}
+  .field label{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--ink-mute);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+    letter-spacing:0.5px;
+  }
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--flame);
+  }
+  .field input[type="date"]{
+    color-scheme: dark;
+  }
+  .person-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .person-chip{
+    padding:9px 16px;
+    border-radius:12px;
+    background:var(--bg-soft);
+    border:1.5px solid var(--line);
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .person-chip.active{
+    border-color:var(--flame);
+    background:rgba(255,90,31,0.12);
+    color:var(--flame);
+  }
+  .auth-btn{
+    width:100%;
+    border:none;
+    background:var(--flame);
+    color:#1a0a00;
+    padding:14px 0;
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .auth-error{
+    color:var(--danger);
+    font-size:12.5px;
+    font-weight:600;
+    margin-top:10px;
+    text-align:center;
+    min-height:16px;
+  }
+
+  .topbar{
+    padding:24px 20px 14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:-0.5px;
+    text-transform:uppercase;
+  }
+  .brand span{color:var(--flame);}
+  .who-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .who-pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 12px 6px 6px;
+    cursor:pointer;
+  }
+  .who-avatar{
+    width:22px; height:22px;
+    border-radius:50%;
+    background:linear-gradient(145deg, var(--flame), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:900; color:#1a0a00;
+    overflow:hidden;
+  }
+  .who-avatar.has-photo{ background:var(--bg-soft); }
+  .who-avatar img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .who-name{font-size:12px; font-weight:700;}
+
+  .tabbar{
+    display:flex;
+    gap:6px;
+    margin:0 20px 18px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:4px;
+  }
+  .tabbar button{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:var(--ink-mute);
+    padding:10px 0;
+    border-radius:11px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    cursor:pointer;
+  }
+  .tabbar button.active{
+    background:var(--flame-dim);
+    color:var(--flame);
+  }
+
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+
+  .streak-strip{
+    margin:0 20px 22px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 18px 16px 18px;
+  }
+  .streak-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .streak-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:var(--ink-mute);
+    font-weight:700;
+  }
+  .streak-count{
+    font-family:'Arial Black', Arial, sans-serif;
+    font-size:15px;
+    color:var(--flame);
+    font-weight:900;
+  }
+  .week-row{
+    display:flex;
+    justify-content:space-between;
+    gap:6px;
+  }
+  .day-flame{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .flame-dot{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:var(--bg-soft);
+    border:1.5px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+  }
+  .flame-dot.run{
+    background: linear-gradient(145deg, #FF5A1F, #FF8A3D);
+    border-color: transparent;
+    box-shadow: 0 0 0 1px rgba(255,90,31,0.3), 0 4px 10px -2px rgba(255,90,31,0.5);
+  }
+  .flame-dot.pushup{
+    background: linear-gradient(145deg, #3FD1C7, #2BAFA6);
+    border-color: transparent;
+    box-shadow: 0 0 0 1px rgba(63,209,199,0.3), 0 4px 10px -2px rgba(63,209,199,0.5);
+  }
+  .flame-dot.both{
+    background: linear-gradient(145deg, #FF5A1F, #3FD1C7);
+    border-color: transparent;
+    box-shadow: 0 4px 10px -2px rgba(255,90,31,0.4);
+  }
+  .day-letter{
+    font-size:10px;
+    font-weight:700;
+    color:var(--ink-mute);
+    text-transform:uppercase;
+  }
+
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap:12px;
+    margin:0 20px 12px 20px;
+  }
+  .hero-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+  }
+  .hero-card.primary{
+    background: linear-gradient(160deg, #1B1E22 0%, #20231F 100%);
+  }
+  .ring-wrap{
+    position:relative;
+    width:96px;
+    height:96px;
+    margin:0 auto 10px auto;
+  }
+  .ring-wrap svg{ transform: rotate(-90deg); }
+  .ring-center{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .ring-num{
+    font-family:'Arial Black', Arial, sans-serif;
+    font-size:22px;
+    font-weight:900;
+    line-height:1;
+  }
+  .ring-sub{
+    font-size:9px;
+    color:var(--ink-mute);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-top:2px;
+  }
+  .card-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--ink-mute);
+    font-weight:700;
+    text-align:center;
+    margin-bottom:2px;
+  }
+  .stack-stat{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .mini-stat{
+    background:var(--bg-soft);
+    border-radius:12px;
+    padding:11px 12px;
+  }
+  .mini-stat .v{
+    font-family:'Arial Black', Arial, sans-serif;
+    font-size:20px;
+    font-weight:900;
+    line-height:1;
+  }
+  .mini-stat .l{
+    font-size:9.5px;
+    color:var(--ink-mute);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-top:3px;
+    font-weight:600;
+  }
+  .accent-cyan{color:var(--cyan);}
+  .accent-flame{color:var(--flame);}
+  .accent-gold{color:var(--gold);}
+
+  .section{
+    margin:26px 20px 14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .section h2{
+    font-size:14px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    margin:0;
+  }
+
+  .goal-card{
+    margin:0 20px 10px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+  }
+  .goal-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .goal-name{font-size:13px; font-weight:700;}
+  .goal-progress-text{font-size:12px; color:var(--ink-mute); font-weight:600;}
+  .goal-progress-text b{color:var(--ink);}
+  .bar-track{
+    height:8px;
+    background:var(--bg-soft);
+    border-radius:5px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:5px;
+    transition: width 0.5s ease;
+  }
+
+  .log-item{
+    margin:0 20px 10px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .log-icon{
+    width:42px;
+    height:42px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+    flex-shrink:0;
+  }
+  .log-icon.run{background:rgba(255,90,31,0.15); color:var(--flame);}
+  .log-icon.walk{background:rgba(242,183,5,0.15); color:var(--gold);}
+  .log-icon.pushup{background:rgba(63,209,199,0.15); color:var(--cyan);}
+  .log-main{flex:1; min-width:0;}
+  .log-title{font-size:13.5px; font-weight:700;}
+  .log-sub{font-size:11.5px; color:var(--ink-mute); margin-top:2px;}
+  .log-right{text-align:right; flex-shrink:0;}
+  .log-right .v{font-size:14px; font-weight:800;}
+  .log-right .l{font-size:10px; color:var(--ink-mute); margin-top:1px;}
+  .log-delete{
+    width:24px; height:24px;
+    border-radius:50%;
+    background:var(--bg-soft);
+    color:var(--ink-mute);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px;
+    font-weight:700;
+    flex-shrink:0;
+    cursor:pointer;
+    margin-left:6px;
+    transition: all 0.15s ease;
+  }
+  .log-delete:active{ transform: scale(0.9); }
+  .log-delete.confirm{
+    background:var(--danger);
+    color:#fff;
+  }
+
+  .empty-state{
+    margin:0 20px 10px 20px;
+    background:var(--card);
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:24px 16px;
+    text-align:center;
+    color:var(--ink-mute);
+    font-size:12.5px;
+    line-height:1.5;
+  }
+
+  .lb-row{
+    margin:0 20px 10px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .lb-rank{
+    width:28px;
+    text-align:center;
+    font-family:'Arial Black', Arial, sans-serif;
+    font-size:15px;
+    font-weight:900;
+    color:var(--ink-mute);
+    flex-shrink:0;
+  }
+  .lb-rank.gold{color:var(--gold);}
+  .lb-rank.silver{color:#C7CBD1;}
+  .lb-rank.bronze{color:#C77B4B;}
+  .lb-avatar{
+    width:38px; height:38px;
+    border-radius:50%;
+    background:linear-gradient(145deg, var(--flame), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; color:#1a0a00;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .lb-avatar.has-photo{ background:var(--bg-soft); }
+  .lb-avatar img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .lb-main{flex:1; min-width:0;}
+  .lb-name{font-size:14px; font-weight:800;}
+  .lb-sub{font-size:11px; color:var(--ink-mute); margin-top:2px;}
+  .lb-name.me::after{
+    content:' (you)';
+    color:var(--ink-mute);
+    font-weight:600;
+    font-size:11px;
+  }
+  .lb-stat{text-align:right; flex-shrink:0;}
+  .lb-stat .v{font-size:16px; font-weight:800; color:var(--flame);}
+  .lb-stat .l{font-size:9.5px; color:var(--ink-mute); text-transform:uppercase; margin-top:1px;}
+
+  .lb-toggle{
+    display:flex;
+    gap:6px;
+    margin:0 20px 16px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:4px;
+  }
+  .lb-toggle button{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:var(--ink-mute);
+    padding:8px 0;
+    border-radius:9px;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .lb-toggle button.active{
+    background:var(--cyan);
+    color:#06201d;
+  }
+
+  .fab-row{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform: translateX(-50%);
+    width:100%;
+    max-width:480px;
+    padding:14px 20px 22px 20px;
+    background: linear-gradient(to top, var(--bg) 55%, rgba(14,15,17,0));
+    display:flex;
+    gap:10px;
+    z-index:10;
+  }
+  .fab{
+    flex:1;
+    border:none;
+    border-radius:14px;
+    padding:14px 0;
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    cursor:pointer;
+  }
+  .fab:active{ transform: scale(0.97); }
+  .fab.run{ background:var(--flame); color:#1a0a00; }
+  .fab.pushup{ background:var(--cyan); color:#06201d; }
+
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--bg-soft);
+    width:100%;
+    max-width:480px;
+    border-radius:22px 22px 0 0;
+    padding:22px 20px 30px 20px;
+    border-top:1px solid var(--line);
+  }
+  .modal h3{
+    margin:0 0 16px 0;
+    font-size:17px;
+    font-weight:800;
+  }
+  .field-row{display:flex; gap:10px;}
+  .field-row .field{flex:1;}
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+  .modal-actions button{
+    flex:1;
+    border:none;
+    border-radius:12px;
+    padding:13px 0;
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .btn-cancel{background:var(--card); color:var(--ink-mute);}
+  .btn-save{background:var(--flame); color:#1a0a00;}
+  .btn-logout{background:var(--card); color:var(--danger);}
+  .profile-avatar-large{
+    width:64px; height:64px;
+    border-radius:50%;
+    background:linear-gradient(145deg, var(--flame), var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; font-weight:900; color:#1a0a00;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .profile-avatar-large.has-photo{ background:var(--bg-soft); }
+  .profile-avatar-large img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .photo-upload-btn{
+    display:inline-block;
+    background:var(--cyan);
+    color:#06201d;
+    padding:9px 16px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    cursor:pointer;
+  }
+
+  .toast{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform: translateX(-50%) translateY(-20px);
+    background:var(--ink);
+    color:var(--bg);
+    padding:10px 18px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:700;
+    opacity:0;
+    transition: all 0.3s ease;
+    z-index:100;
+    pointer-events:none;
+  }
+  .toast.show{
+    opacity:1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  ::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-brand">CUY<span>LER</span></div>
+  <div class="auth-sub">Run. Push. Repeat.</div>
+
+  <div class="auth-card">
+    <div class="auth-toggle">
+      <button id="toggleLogin" class="active" onclick="setAuthMode('login')">Log In</button>
+      <button id="toggleSignup" onclick="setAuthMode('signup')">New Person</button>
+    </div>
+
+    <div id="loginPane">
+      <div class="field">
+        <label>Who's this</label>
+        <div class="person-grid" id="loginPersonGrid"></div>
+      </div>
+      <div class="field">
+        <label>PIN</label>
+        <input type="password" id="loginPin" maxlength="6" placeholder="****" inputmode="numeric">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Enter</button>
+    </div>
+
+    <div id="signupPane" style="display:none;">
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="signupName" maxlength="16" placeholder="e.g. Chris">
+      </div>
+      <div class="field">
+        <label>Choose a PIN (4-6 digits)</label>
+        <input type="password" id="signupPin" maxlength="6" placeholder="****" inputmode="numeric">
+      </div>
+      <button class="auth-btn" onclick="doSignup()">Create &amp; Enter</button>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<div class="wrap" id="mainApp">
+  <div class="topbar">
+    <div class="brand">CUY<span>LER</span></div>
+    <div class="who-row">
+      <div class="who-pill" onclick="logout()">
+        <div class="who-avatar" id="avatarInitial">?</div>
+        <div class="who-name" id="whoName">-</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button id="tabBtnMe" class="active" onclick="switchTab('me')">My Stats</button>
+    <button id="tabBtnBoard" onclick="switchTab('board')">Leaderboard</button>
+  </div>
+
+  <div class="tabpanel active" id="tabMe">
+    <div class="streak-strip">
+      <div class="streak-top">
+        <div class="streak-label">This Week</div>
+        <div class="streak-count" id="streakCount">0 day streak</div>
+      </div>
+      <div class="week-row" id="weekRow"></div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-card primary">
+        <div class="ring-wrap">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="42" fill="none" stroke="#2A2E33" stroke-width="9"/>
+            <circle id="weekRing" cx="48" cy="48" r="42" fill="none" stroke="#FF5A1F" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num" id="weekRunCount">0/4</div>
+            <div class="ring-sub">runs</div>
+          </div>
+        </div>
+        <div class="card-label">Weekly Goal</div>
+      </div>
+
+      <div class="stack-stat">
+        <div class="mini-stat">
+          <div class="v accent-flame" id="totalMiles">0.0</div>
+          <div class="l">Total Miles</div>
+        </div>
+        <div class="mini-stat">
+          <div class="v accent-cyan" id="totalPushups">0</div>
+          <div class="l">Push-ups Logged</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-grid" style="grid-template-columns: 1fr;">
+      <div class="hero-card" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px;">
+        <div>
+          <div class="card-label" style="text-align:left; margin-bottom:4px;">Total Points</div>
+          <div class="ring-sub" style="margin-top:0;">time logged x2 + push-ups x1.5 + streak bonus</div>
+        </div>
+        <div class="ring-num accent-flame" id="totalPoints" style="font-size:32px;">0</div>
+      </div>
+    </div>
+
+    <div class="hero-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="hero-card">
+        <div class="card-label" style="margin-bottom:8px;">Avg Run HR</div>
+        <div style="text-align:center;">
+          <span class="ring-num accent-gold" id="avgHR" style="font-size:26px;">-</span>
+          <div class="ring-sub" style="margin-top:2px;">bpm Zone 2 target under 135</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="card-label" style="margin-bottom:8px;">Best Push-up Set</div>
+        <div style="text-align:center;">
+          <span class="ring-num accent-cyan" id="bestSet" style="font-size:26px;">-</span>
+          <div class="ring-sub" style="margin-top:2px;">single set, all-time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section"><h2>Goals</h2></div>
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-name">Stamina - 4 Runs / Week</div>
+        <div class="goal-progress-text" id="staminaText"><b>0</b>/4 this week</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="staminaBar" style="width:0%; background:var(--flame);"></div></div>
+    </div>
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-name">Push-up Volume - 100 Reps / Week</div>
+        <div class="goal-progress-text" id="pushupText"><b>0</b>/100 this week</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="pushupBar" style="width:0%; background:var(--cyan);"></div></div>
+    </div>
+
+    <div class="section"><h2>Recent Activity</h2></div>
+    <div id="logList"></div>
+  </div>
+
+  <div class="tabpanel" id="tabBoard">
+    <div class="lb-toggle">
+      <button id="lbTogglePoints" class="active" onclick="setLbMode('points')">Points</button>
+      <button id="lbToggleMiles" onclick="setLbMode('miles')">Miles</button>
+      <button id="lbTogglePushups" onclick="setLbMode('pushups')">Push-ups</button>
+      <button id="lbToggleStreak" onclick="setLbMode('streak')">Streak</button>
+    </div>
+    <div class="section" style="margin-top:0;"><h2 id="lbTitle">Total Points</h2></div>
+    <div id="lbList"></div>
+  </div>
+
+  <div class="fab-row">
+    <button class="fab run" onclick="openRunModal()">+ Run</button>
+    <button class="fab pushup" onclick="openPushupModal()">+ Push-ups</button>
+  </div>
+</div>
+
+<div class="overlay" id="runOverlay">
+  <div class="modal">
+    <h3>Log a Run</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="runDate">
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="runType">
+        <option>Outdoor Run</option>
+        <option>Outdoor Walk</option>
+        <option>Treadmill Run</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Distance (mi)</label>
+        <input type="number" step="0.01" id="runDistance" placeholder="2.01">
+      </div>
+      <div class="field">
+        <label>Duration (mm:ss or min)</label>
+        <input type="text" id="runDuration" placeholder="21:49 or 22" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Avg HR</label>
+        <input type="number" id="runHR" placeholder="135">
+      </div>
+      <div class="field">
+        <label>Calories</label>
+        <input type="number" id="runCal" placeholder="300">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+      <button class="btn-save" onclick="saveRun()">Save Run</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="pushupOverlay">
+  <div class="modal">
+    <h3>Log Push-ups</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="pushupDate">
+    </div>
+    <div class="field">
+      <label>Day Type</label>
+      <select id="puType">
+        <option>Standard Sets</option>
+        <option>Ladder</option>
+        <option>Max Reps</option>
+        <option>Volume Day</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sets (comma separated, e.g. 12,10,8,6)</label>
+      <input type="text" id="puSets" placeholder="12,10,8,6">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+      <button class="btn-save" onclick="savePushups()">Save Push-ups</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="logoutOverlay">
+  <div class="modal">
+    <h3 id="logoutName">Profile</h3>
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+      <div class="profile-avatar-large" id="profileAvatarLarge">?</div>
+      <div style="flex:1;">
+        <label class="photo-upload-btn" for="photoInput">Change Photo</label>
+        <input type="file" id="photoInput" accept="image/*" capture="user" style="display:none;" onchange="handlePhotoUpload(event)">
+        <div style="font-size:11px; color:var(--ink-mute); margin-top:6px;">Shown next to your name on the leaderboard</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModals()">Cancel</button>
+      <button class="btn-logout" onclick="confirmLogout()">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let users = [];
+let currentUser = null;
+let sessions = [];
+let pushups = [];
+let myPhoto = null;
+let activeTab = 'me';
+let lbMode = 'points';
+
+/* ============ Supabase REST client ============
+   Talks directly to Supabase's auto-generated REST API (PostgREST)
+   using the publishable/anon key. No SDK needed — plain fetch calls.
+*/
+const SUPABASE_URL = 'https://aayyzjbifvjtgonbezbi.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_T_iBte0TNuTPst-FycmuyQ_BuG4yuU2';
+
+async function sbFetch(path, options){
+  const opts = options || {};
+  const headers = Object.assign({
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+  }, opts.headers || {});
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({}, opts, {headers}));
+  if(!res.ok){
+    const text = await res.text().catch(()=> '');
+    throw new Error('Supabase ' + res.status + ': ' + text);
+  }
+  if(res.status === 204) return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+const db = {
+  async getUsers(){
+    const rows = await sbFetch('users?select=name,pin_hash');
+    return (rows || []).map(r => ({name: r.name, pinHash: r.pin_hash}));
+  },
+  async createUser(name, pinHash){
+    return sbFetch('users', {
+      method: 'POST',
+      headers: {'Prefer': 'return=representation'},
+      body: JSON.stringify({name, pin_hash: pinHash}),
+    });
+  },
+  async getSessions(name){
+    const rows = await sbFetch('sessions?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,type,distance,duration,hr,cal,points&order=date.asc');
+    return rows || [];
+  },
+  async addSession(name, session){
+    return sbFetch('sessions', {
+      method: 'POST',
+      body: JSON.stringify(Object.assign({user_name: name}, session)),
+    });
+  },
+  async deleteSession(id){
+    return sbFetch('sessions?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
+  },
+  async getPushups(name){
+    const rows = await sbFetch('pushups?user_name=eq.' + encodeURIComponent(name) + '&select=id,date,type,sets,total,points&order=date.asc');
+    return rows || [];
+  },
+  async deletePushup(id){
+    return sbFetch('pushups?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
+  },
+  async addPushup(name, entry){
+    return sbFetch('pushups', {
+      method: 'POST',
+      body: JSON.stringify(Object.assign({user_name: name}, entry)),
+    });
+  },
+  async getPhoto(name){
+    const rows = await sbFetch('photos?user_name=eq.' + encodeURIComponent(name) + '&select=photo_data');
+    return (rows && rows[0]) ? rows[0].photo_data : null;
+  },
+  async setPhoto(name, dataUrl){
+    return sbFetch('photos', {
+      method: 'POST',
+      headers: {'Prefer': 'resolution=merge-duplicates'},
+      body: JSON.stringify({user_name: name, photo_data: dataUrl, updated_at: new Date().toISOString()}),
+    });
+  },
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function simpleHash(str){
+  const enc = new TextEncoder().encode(str + ':engine-salt');
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function parseDuration(raw){
+  const str = String(raw || '').trim();
+  if(!str) return 0;
+  if(str.includes(':')){
+    const parts = str.split(':').map(p => parseFloat(p.trim()) || 0);
+    if(parts.length === 2){
+      // MM:SS
+      return parts[0] + (parts[1] / 60);
+    }
+    if(parts.length === 3){
+      // HH:MM:SS
+      return (parts[0] * 60) + parts[1] + (parts[2] / 60);
+    }
+    return parseFloat(str) || 0;
+  }
+  return parseFloat(str) || 0;
+}
+
+function fmtDuration(minutes){
+  const m = Math.floor(minutes);
+  const s = Math.round((minutes - m) * 60);
+  if(s === 0) return m + ' min';
+  return m + ':' + String(s).padStart(2,'0') + ' min';
+}
+
+function fmtDate(d){
+  // d is a 'YYYY-MM-DD' string. new Date(d) parses date-only strings as UTC midnight,
+  // which shifts to the wrong calendar day once converted to local time for display.
+  // Parse the parts manually and construct a local-time Date instead.
+  const parts = String(d).split('-');
+  const localDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  return localDate.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function startOfWeek(){
+  const now = new Date();
+  const idx = (now.getDay() + 6) % 7;
+  const start = new Date(now);
+  start.setDate(now.getDate() - idx);
+  start.setHours(0,0,0,0);
+  return start;
+}
+function dateToLocalISO(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function getWeekDates(){
+  const weekStart = startOfWeek();
+  const out = [];
+  for(let i=0;i<7;i++){
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate()+i);
+    out.push(dateToLocalISO(d));
+  }
+  return out;
+}
+
+let storageAvailable = true;
+
+async function checkStorageHealth(){
+  try{
+    await sbFetch('users?select=name&limit=1');
+    storageAvailable = true;
+  }catch(e){
+    storageAvailable = false;
+  }
+}
+
+async function boot(){
+  await checkStorageHealth();
+  if(!storageAvailable){
+    document.getElementById('authError').textContent = '';
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#3a1a0a;color:#ffb088;font-size:11.5px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:14px;text-align:center;';
+
+    banner.textContent = 'Can\'t reach the database right now. Check your connection and reload.';
+    document.querySelector('.auth-card').prepend(banner);
+  }
+
+  try{
+    users = await db.getUsers();
+  }catch(e){ users = []; }
+
+  if(users.length === 0){
+    setAuthMode('signup');
+  }
+  renderPersonGrid();
+
+  let savedUser = null;
+  try{
+    savedUser = localStorage.getItem('cuyler:activeUser');
+  }catch(e){ savedUser = null; }
+
+  if(savedUser && users.find(u => u.name === savedUser)){
+    currentUser = savedUser;
+    await enterApp();
+  }
+}
+
+function renderPersonGrid(){
+  const grid = document.getElementById('loginPersonGrid');
+  if(users.length === 0){
+    grid.innerHTML = '<div style="color:var(--ink-mute); font-size:12.5px;">No one here yet, tap "New Person" above.</div>';
+    return;
+  }
+  grid.innerHTML = users.map(u =>
+    `<div class="person-chip" data-name="${u.name}" onclick="selectPerson('${u.name}')">${u.name}</div>`
+  ).join('');
+}
+
+let selectedLoginName = null;
+function selectPerson(name){
+  selectedLoginName = name;
+  document.querySelectorAll('.person-chip').forEach(el => {
+    el.classList.toggle('active', el.dataset.name === name);
+  });
+}
+
+function setAuthMode(mode){
+  document.getElementById('toggleLogin').classList.toggle('active', mode==='login');
+  document.getElementById('toggleSignup').classList.toggle('active', mode==='signup');
+  document.getElementById('loginPane').style.display = mode==='login' ? 'block' : 'none';
+  document.getElementById('signupPane').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('authError').textContent = '';
+}
+
+async function doLogin(){
+  const pin = document.getElementById('loginPin').value.trim();
+  const err = document.getElementById('authError');
+  if(!selectedLoginName){ err.textContent = 'Pick who you are first.'; return; }
+  if(!pin){ err.textContent = 'Enter your PIN.'; return; }
+  try{
+    users = await db.getUsers();
+  }catch(e){}
+  const user = users.find(u => u.name === selectedLoginName);
+  const hash = await simpleHash(pin);
+  if(!user || user.pinHash !== hash){
+    err.textContent = 'Wrong PIN. Try again.';
+    return;
+  }
+  currentUser = selectedLoginName;
+  err.textContent = '';
+  await enterApp();
+}
+
+async function doSignup(){
+  const name = document.getElementById('signupName').value.trim();
+  const pin = document.getElementById('signupPin').value.trim();
+  const err = document.getElementById('authError');
+  if(!name){ err.textContent = 'Enter a name.'; return; }
+  if(name.length > 16){ err.textContent = 'Name too long (16 chars max).'; return; }
+  if(!/^\d{4,6}$/.test(pin)){ err.textContent = 'PIN must be 4-6 digits.'; return; }
+
+  const hash = await simpleHash(pin);
+  try{
+    await db.createUser(name, hash);
+  }catch(e){
+    const msg = (e && e.message) || '';
+    if(msg.includes('duplicate') || msg.includes('unique') || msg.includes('23505')){
+      err.textContent = 'That name is taken, pick another or log in.';
+    } else {
+      err.textContent = 'Could not save: ' + (msg || 'unknown error');
+    }
+    return;
+  }
+  try{
+    users = await db.getUsers();
+  }catch(e){}
+  currentUser = name;
+  err.textContent = '';
+  await enterApp();
+}
+
+async function enterApp(){
+  try{
+    localStorage.setItem('cuyler:activeUser', currentUser);
+  }catch(e){}
+
+  await loadUserData();
+  if(sessions.length === 0 && pushups.length === 0){
+    await maybeSeed();
+  }
+
+  try{
+    myPhoto = await db.getPhoto(currentUser);
+  }catch(e){ myPhoto = null; }
+
+  document.getElementById('authScreen').classList.add('hide');
+  document.getElementById('mainApp').classList.add('show');
+  document.getElementById('whoName').textContent = currentUser;
+  updateAvatarDisplays();
+
+  render();
+}
+
+function updateAvatarDisplays(){
+  const initial = currentUser ? currentUser.charAt(0).toUpperCase() : '?';
+  const topAvatar = document.getElementById('avatarInitial');
+  const largeAvatar = document.getElementById('profileAvatarLarge');
+  if(myPhoto){
+    topAvatar.innerHTML = '<img src="' + myPhoto + '" alt="">';
+    topAvatar.classList.add('has-photo');
+    largeAvatar.innerHTML = '<img src="' + myPhoto + '" alt="">';
+    largeAvatar.classList.add('has-photo');
+  } else {
+    topAvatar.textContent = initial;
+    topAvatar.classList.remove('has-photo');
+    largeAvatar.textContent = initial;
+    largeAvatar.classList.remove('has-photo');
+  }
+}
+
+async function maybeSeed(){
+  if(currentUser.toLowerCase() === 'chris'){
+    try{
+      await db.addSession(currentUser, {date:'2026-06-22', type:'Outdoor Walk', distance:3.12, duration:50, hr:115, cal:424, points:Math.round(50*2)});
+      await db.addSession(currentUser, {date:'2026-06-23', type:'Outdoor Run', distance:2.01, duration:22, hr:161, cal:301, points:Math.round(22*2)});
+      sessions = await db.getSessions(currentUser);
+    }catch(e){}
+  }
+}
+
+function logout(){
+  document.getElementById('logoutName').textContent = 'Hi ' + currentUser;
+  updateAvatarDisplays();
+  document.getElementById('logoutOverlay').classList.add('show');
+}
+
+function handlePhotoUpload(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = async function(){
+      const size = 160;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size / img.width, size / img.height);
+      const sw = size / scale;
+      const sh = size / scale;
+      const sx = (img.width - sw) / 2;
+      const sy = (img.height - sh) / 2;
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      myPhoto = dataUrl;
+      try{
+        await db.setPhoto(currentUser, dataUrl);
+        updateAvatarDisplays();
+        showToast('Photo updated');
+      }catch(err){
+        showToast('Could not save photo');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function confirmLogout(){
+  try{ localStorage.removeItem('cuyler:activeUser'); }catch(e){}
+  currentUser = null;
+  sessions = [];
+  pushups = [];
+  myPhoto = null;
+  closeModals();
+  document.getElementById('mainApp').classList.remove('show');
+  document.getElementById('authScreen').classList.remove('hide');
+  document.getElementById('loginPin').value = '';
+  selectedLoginName = null;
+  renderPersonGrid();
+  setAuthMode('login');
+}
+
+async function loadUserData(){
+  try{
+    sessions = await db.getSessions(currentUser);
+  }catch(e){ sessions = []; }
+  try{
+    pushups = await db.getPushups(currentUser);
+  }catch(e){ pushups = []; }
+}
+
+function switchTab(tab){
+  activeTab = tab;
+  document.getElementById('tabBtnMe').classList.toggle('active', tab==='me');
+  document.getElementById('tabBtnBoard').classList.toggle('active', tab==='board');
+  document.getElementById('tabMe').classList.toggle('active', tab==='me');
+  document.getElementById('tabBoard').classList.toggle('active', tab==='board');
+  if(tab==='board') renderLeaderboard();
+}
+
+function setLbMode(mode){
+  lbMode = mode;
+  document.getElementById('lbTogglePoints').classList.toggle('active', mode==='points');
+  document.getElementById('lbToggleMiles').classList.toggle('active', mode==='miles');
+  document.getElementById('lbTogglePushups').classList.toggle('active', mode==='pushups');
+  document.getElementById('lbToggleStreak').classList.toggle('active', mode==='streak');
+  const titles = {points:'Total Points', miles:'Total Miles', pushups:'Total Push-ups', streak:'Current Streak'};
+  document.getElementById('lbTitle').textContent = titles[mode];
+  renderLeaderboard();
+}
+
+async function renderLeaderboard(){
+  const list = document.getElementById('lbList');
+  list.innerHTML = '<div class="empty-state">Loading everyone\'s stats...</div>';
+
+  try{
+    users = await db.getUsers();
+  }catch(e){}
+
+  const results = [];
+  for(const u of users){
+    let s = [], p = [];
+    try{
+      s = await db.getSessions(u.name);
+    }catch(e){}
+    try{
+      p = await db.getPushups(u.name);
+    }catch(e){}
+
+    let photo = null;
+    try{
+      photo = await db.getPhoto(u.name);
+    }catch(e){}
+
+    const miles = s.reduce((a,x)=>a+(x.distance||0),0);
+    const totalPu = p.reduce((a,x)=>a+(x.total||0),0);
+    const pts = calcTotalPoints(s, p);
+
+    results.push({name:u.name, miles, totalPu, streak:pts.streak, points:pts.total, photo});
+  }
+
+  const keyMap = {points:'points', miles:'miles', pushups:'totalPu', streak:'streak'};
+  const key = keyMap[lbMode];
+  results.sort((a,b) => b[key] - a[key]);
+
+  if(results.length === 0){
+    list.innerHTML = '<div class="empty-state">No one has logged anything yet.</div>';
+    return;
+  }
+
+  const rankClasses = ['gold','silver','bronze'];
+  list.innerHTML = results.map((r, i) => {
+    const rankCls = rankClasses[i] || '';
+    const isMe = r.name === currentUser;
+    let valDisplay, label;
+    if(lbMode === 'points'){ valDisplay = r.points; label = 'pts'; }
+    else if(lbMode === 'miles'){ valDisplay = r.miles.toFixed(1); label = 'miles'; }
+    else if(lbMode === 'pushups'){ valDisplay = r.totalPu; label = 'reps'; }
+    else { valDisplay = r.streak; label = r.streak===1?'day':'days'; }
+    const avatarInner = r.photo
+      ? '<img src="' + r.photo + '" alt="">'
+      : r.name.charAt(0).toUpperCase();
+    const avatarCls = r.photo ? 'lb-avatar has-photo' : 'lb-avatar';
+    return '<div class="lb-row">' +
+      '<div class="lb-rank ' + rankCls + '">' + (i+1) + '</div>' +
+      '<div class="' + avatarCls + '">' + avatarInner + '</div>' +
+      '<div class="lb-main">' +
+        '<div class="lb-name ' + (isMe?'me':'') + '">' + r.name + '</div>' +
+        '<div class="lb-sub">' + r.points + ' pts - ' + r.miles.toFixed(1) + ' mi - ' + r.totalPu + ' reps - ' + r.streak + 'd streak</div>' +
+      '</div>' +
+      '<div class="lb-stat">' +
+        '<div class="v">' + valDisplay + '</div>' +
+        '<div class="l">' + label + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openRunModal(){
+  document.getElementById('runDate').value = todayISO();
+  document.getElementById('runOverlay').classList.add('show');
+}
+function openPushupModal(){
+  document.getElementById('pushupDate').value = todayISO();
+  document.getElementById('pushupOverlay').classList.add('show');
+}
+function closeModals(){
+  document.getElementById('runOverlay').classList.remove('show');
+  document.getElementById('pushupOverlay').classList.remove('show');
+  document.getElementById('logoutOverlay').classList.remove('show');
+  document.getElementById('runDistance').value='';
+  document.getElementById('runDuration').value='';
+  document.getElementById('runHR').value='';
+  document.getElementById('runCal').value='';
+  document.getElementById('puSets').value='';
+}
+
+async function saveRun(){
+  const date = document.getElementById('runDate').value || todayISO();
+  const distance = parseFloat(document.getElementById('runDistance').value) || 0;
+  const duration = parseDuration(document.getElementById('runDuration').value);
+  const hr = parseFloat(document.getElementById('runHR').value) || 0;
+  const cal = parseFloat(document.getElementById('runCal').value) || 0;
+  const type = document.getElementById('runType').value;
+  if(distance <= 0 && duration <= 0){ showToast('Add distance or duration'); return; }
+  const points = Math.round(duration * 2);
+  try{
+    await db.addSession(currentUser, {date, type, distance, duration, hr, cal, points});
+    sessions = await db.getSessions(currentUser);
+  }catch(e){
+    showToast('Could not save run');
+    return;
+  }
+  closeModals();
+  render();
+  showToast('Run logged' + (points > 0 ? ' - +' + points + ' pts' : ''));
+}
+
+async function savePushups(){
+  const date = document.getElementById('pushupDate').value || todayISO();
+  const raw = document.getElementById('puSets').value.trim();
+  if(!raw){ showToast('Enter at least one set'); return; }
+  const sets = raw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
+  if(sets.length === 0){ showToast('Enter valid numbers'); return; }
+  const type = document.getElementById('puType').value;
+  const total = sets.reduce((a,b)=>a+b, 0);
+  const points = Math.round(total * 1.5);
+  try{
+    await db.addPushup(currentUser, {date, type, sets, total, points});
+    pushups = await db.getPushups(currentUser);
+  }catch(e){
+    showToast('Could not save push-ups');
+    return;
+  }
+  closeModals();
+  render();
+  showToast('Push-ups logged - +' + points + ' pts');
+}
+
+/* ---------- Points engine ----------
+   Run/Walk:   duration (min) x 2
+   Push-ups:   total reps x 1.5
+   Streak bonus (added once per person, highest tier only, not stacking):
+     3+ days  -> +10
+     7+ days  -> +30
+     14+ days -> +75
+     30+ days -> +200
+*/
+function calcStreakBonus(streakDays){
+  if(streakDays >= 30) return 200;
+  if(streakDays >= 14) return 75;
+  if(streakDays >= 7) return 30;
+  if(streakDays >= 3) return 10;
+  return 0;
+}
+
+function calcStreakForDates(allDates){
+  let streak = 0;
+  let cursor = new Date();
+  while(true){
+    const iso = dateToLocalISO(cursor);
+    if(allDates.has(iso)){ streak++; cursor.setDate(cursor.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+function calcTotalPoints(sessionsArr, pushupsArr){
+  const runPts = sessionsArr.reduce((a,s) => a + (s.points || Math.round((s.duration||0) * 2)), 0);
+  const puPts = pushupsArr.reduce((a,p) => a + (p.points || Math.round((p.total||0) * 1.5)), 0);
+  const allDates = new Set([...sessionsArr.map(x=>x.date), ...pushupsArr.map(x=>x.date)]);
+  const streak = calcStreakForDates(allDates);
+  const streakPts = calcStreakBonus(streak);
+  return {runPts, puPts, streakPts, total: runPts + puPts + streakPts, streak};
+}
+
+let pendingDeleteId = null;
+let pendingDeleteTimeout = null;
+
+async function handleDeleteClick(event, id, kind){
+  event.stopPropagation();
+  const btn = event.target;
+
+  if(pendingDeleteId !== id){
+    // First tap: arm it
+    if(pendingDeleteTimeout) clearTimeout(pendingDeleteTimeout);
+    document.querySelectorAll('.log-delete.confirm').forEach(el => {
+      el.classList.remove('confirm');
+      el.textContent = '\u00d7';
+    });
+    pendingDeleteId = id;
+    btn.classList.add('confirm');
+    btn.textContent = '\u2713';
+    pendingDeleteTimeout = setTimeout(() => {
+      btn.classList.remove('confirm');
+      btn.textContent = '\u00d7';
+      pendingDeleteId = null;
+    }, 3000);
+    return;
+  }
+
+  // Second tap within window: actually delete
+  clearTimeout(pendingDeleteTimeout);
+  pendingDeleteId = null;
+  try{
+    if(kind === 'session'){
+      await db.deleteSession(id);
+      sessions = await db.getSessions(currentUser);
+    } else {
+      await db.deletePushup(id);
+      pushups = await db.getPushups(currentUser);
+    }
+    render();
+    showToast('Entry deleted');
+  }catch(e){
+    showToast('Could not delete');
+  }
+}
+
+function render(){
+  const weekDates = getWeekDates();
+  const weekRunDates = new Set(sessions.filter(s => weekDates.includes(s.date)).map(s=>s.date));
+  const weekPushupDates = new Set(pushups.filter(p => weekDates.includes(p.date)).map(p=>p.date));
+
+  const dayLetters = ['M','T','W','T','F','S','S'];
+  const weekRow = document.getElementById('weekRow');
+  weekRow.innerHTML = '';
+  weekDates.forEach((d, i) => {
+    const hasRun = weekRunDates.has(d);
+    const hasPushup = weekPushupDates.has(d);
+    let cls = '', icon = '';
+    if(hasRun && hasPushup){ cls='both'; icon='!'; }
+    else if(hasRun){ cls='run'; icon='R'; }
+    else if(hasPushup){ cls='pushup'; icon='P'; }
+    const el = document.createElement('div');
+    el.className = 'day-flame';
+    el.innerHTML = '<div class="flame-dot ' + cls + '">' + icon + '</div><div class="day-letter">' + dayLetters[i] + '</div>';
+    weekRow.appendChild(el);
+  });
+
+  const allDatesActive = new Set([...sessions.map(s=>s.date), ...pushups.map(p=>p.date)]);
+  const streak = calcStreakForDates(allDatesActive);
+  document.getElementById('streakCount').textContent = streak + ' day streak';
+
+  const weekRunSessions = sessions.filter(s => weekDates.includes(s.date) && s.type !== 'Outdoor Walk');
+  const runGoal = 4;
+  const circumference = 264;
+  const pct = Math.min(weekRunSessions.length, runGoal) / runGoal;
+  document.getElementById('weekRing').setAttribute('stroke-dashoffset', circumference - (circumference*pct));
+  document.getElementById('weekRunCount').textContent = weekRunSessions.length + '/' + runGoal;
+
+  const totalMiles = sessions.reduce((a,s)=>a + (s.distance||0), 0);
+  document.getElementById('totalMiles').textContent = totalMiles.toFixed(1);
+  const totalPushupsCount = pushups.reduce((a,p)=>a + (p.total||0), 0);
+  document.getElementById('totalPushups').textContent = totalPushupsCount;
+
+  const pointsBreakdown = calcTotalPoints(sessions, pushups);
+  document.getElementById('totalPoints').textContent = pointsBreakdown.total;
+
+  const hrVals = sessions.filter(s => s.hr && s.hr > 0).map(s=>s.hr);
+  const avgHR = hrVals.length ? Math.round(hrVals.reduce((a,b)=>a+b,0)/hrVals.length) : null;
+  document.getElementById('avgHR').textContent = avgHR !== null ? avgHR : '-';
+
+  let bestSet = 0;
+  pushups.forEach(p => { p.sets.forEach(s => { if(s > bestSet) bestSet = s; }); });
+  document.getElementById('bestSet').textContent = bestSet || '-';
+
+  document.getElementById('staminaText').innerHTML = '<b>' + weekRunSessions.length + '</b>/4 this week';
+  document.getElementById('staminaBar').style.width = Math.min(100, (weekRunSessions.length/4)*100) + '%';
+
+  const pushupTotalWeek = pushups.filter(p => weekDates.includes(p.date)).reduce((a,p)=>a+p.total,0);
+  document.getElementById('pushupText').innerHTML = '<b>' + pushupTotalWeek + '</b>/100 this week';
+  document.getElementById('pushupBar').style.width = Math.min(100, (pushupTotalWeek/100)*100) + '%';
+
+  const combined = [
+    ...sessions.map(s => Object.assign({}, s, {kind:'session'})),
+    ...pushups.map(p => Object.assign({}, p, {kind:'pushup'})),
+  ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  const logList = document.getElementById('logList');
+  if(combined.length === 0){
+    logList.innerHTML = '<div class="empty-state">No activity yet. Log a run or a push-up set below to get started.</div>';
+  } else {
+    logList.innerHTML = combined.slice(0,10).map(item => {
+      if(item.kind === 'session'){
+        const isWalk = item.type === 'Outdoor Walk';
+        const icon = isWalk ? 'W' : 'R';
+        const iconCls = isWalk ? 'walk' : 'run';
+        const pts = item.points || Math.round((item.duration||0) * 2);
+        return '<div class="log-item" data-id="' + item.id + '" data-kind="session">' +
+          '<div class="log-icon ' + iconCls + '">' + icon + '</div>' +
+          '<div class="log-main">' +
+            '<div class="log-title">' + item.type + '</div>' +
+            '<div class="log-sub">' + fmtDate(item.date) + ' - ' + fmtDuration(item.duration||0) + ' - ' + (item.distance||0).toFixed(2) + ' mi' + (item.hr ? ' - '+item.hr+' bpm' : '') + '</div>' +
+          '</div>' +
+          '<div class="log-right">' +
+            '<div class="v accent-flame">+' + pts + '</div>' +
+            '<div class="l">pts</div>' +
+          '</div>' +
+          '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'session\')">&times;</div>' +
+        '</div>';
+      } else {
+        const pts = item.points || Math.round((item.total||0) * 1.5);
+        return '<div class="log-item" data-id="' + item.id + '" data-kind="pushup">' +
+          '<div class="log-icon pushup">P</div>' +
+          '<div class="log-main">' +
+            '<div class="log-title">' + item.type + '</div>' +
+            '<div class="log-sub">' + fmtDate(item.date) + ' - ' + item.total + ' reps - ' + item.sets.length + ' sets (' + item.sets.join(', ') + ')</div>' +
+          '</div>' +
+          '<div class="log-right">' +
+            '<div class="v accent-cyan">+' + pts + '</div>' +
+            '<div class="l">pts</div>' +
+          '</div>' +
+          '<div class="log-delete" onclick="handleDeleteClick(event, \'' + item.id + '\', \'pushup\')">&times;</div>' +
+        '</div>';
+      }
+    }).join('');
+  }
+}
+
+boot();
+</script>
+
+</body>
+</html>
